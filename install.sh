@@ -1,10 +1,10 @@
 #!/bin/bash
 [[ $(id -u) -ne 0 ]] && exit 1
 USERNAME=${1:-k2s}
-PASSWORD=${2:-Broadbus1}
+PASSWORD=${2:-s3cr3t00}
 WORKING_DIRECTORY=${3:-/usr/local/k2s}
-SNMP_USERNAME=${4:-halouser}
-SNMP_PASSWORD=${5:-Broadbus1}
+SNMP_USERNAME=${4:-xxxx}
+SNMP_PASSWORD=${5:-s3cr3t}
 SNMP_BIND_TARGET=${6:-0.0.0.0}
 SNMP_PORT=${7:-161}
 KAFKA_BROKER=${8:-127.0.0.1:9092}
@@ -36,7 +36,7 @@ usermod -L ${USERNAME}
      apt-get install -y nodejs && \
      npm install -g npm@latest
   fi
-  else
+ else
     # node-v18.16.0-linux-x64.tar.xz
     echo "#!/bin/bash" > /etc/profile.d/nodejs.sh
     echo "VERSION=${NODE_VERSION}" >> /etc/profile.d/nodejs.sh
@@ -48,7 +48,7 @@ usermod -L ${USERNAME}
     ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/node /usr/bin/node
     ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/npm /usr/bin/npm
     ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/npx /usr/bin/npx
-  fi
+ fi
 
 #
 [[ ! -d ${WORKING_DIRECTORY} ]] && (mkdir -p ${WORKING_DIRECTORY} ; chown ${USERNAME} ${WORKING_DIRECTORY})
