@@ -1,10 +1,10 @@
 #!/bin/bash
 [[ $(id -u) -ne 0 ]] && exit 1
 USERNAME=${1:-k2s}
-PASSWORD=${2:-s3cr3t00}
+PASSWORD=${2:-"czNjcjN0MDA="}
 WORKING_DIRECTORY=${3:-/usr/local/k2s}
 SNMP_USERNAME=${4:-xxxx}
-SNMP_PASSWORD=${5:-s3cr3t}
+SNMP_PASSWORD=${5:-"czNjcjN0MDA="}
 SNMP_BIND_TARGET=${6:-0.0.0.0}
 SNMP_PORT=${7:-161}
 KAFKA_BROKER=${8:-127.0.0.1:9092}
@@ -29,26 +29,26 @@ echo "${USERNAME}:${PASSWORD}"|chpasswd
 usermod -L ${USERNAME}
 
 #
- if [ ${OFFLINE_INSTALL} -ne 0 ] ; then
-  dpkg -s nodejs &> /dev/null
-  if [ $? -ne 0 ] ; then
-     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-     apt-get install -y nodejs && \
-     npm install -g npm@latest
-  fi
- else
-    # node-v18.16.0-linux-x64.tar.xz
-    echo "#!/bin/bash" > /etc/profile.d/nodejs.sh
-    echo "VERSION=${NODE_VERSION}" >> /etc/profile.d/nodejs.sh
-    echo "DISTRO=${NODE_DISTRO}" >> /etc/profile.d/nodejs.sh
-    echo "export PATH=/usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin:\${PATH}" >> /etc/profile.d/nodejs.sh
-    chmod 644 /etc/profile.d/nodejs.sh
-    mkdir -p /usr/local/lib/nodejs
-    tar -xJvf node-${NODE_VERSION}-${DISTRO}.tar.xz -C /usr/local/lib/nodejs
-    ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/node /usr/bin/node
-    ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/npm /usr/bin/npm
-    ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/npx /usr/bin/npx
- fi
+if [ ${OFFLINE_INSTALL} -ne 0 ] ; then
+dpkg -s nodejs &> /dev/null
+if [ $? -ne 0 ] ; then
+   curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+   apt-get install -y nodejs && \
+   npm install -g npm@latest
+fi
+else
+   # node-v18.16.0-linux-x64.tar.xz
+   echo "#!/bin/bash" > /etc/profile.d/nodejs.sh
+   echo "VERSION=${NODE_VERSION}" >> /etc/profile.d/nodejs.sh
+   echo "DISTRO=${NODE_DISTRO}" >> /etc/profile.d/nodejs.sh
+   echo "export PATH=/usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin:\${PATH}" >> /etc/profile.d/nodejs.sh
+   chmod 644 /etc/profile.d/nodejs.sh
+   mkdir -p /usr/local/lib/nodejs
+   tar -xJvf node-${NODE_VERSION}-${DISTRO}.tar.xz -C /usr/local/lib/nodejs
+   ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/node /usr/bin/node
+   ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/npm /usr/bin/npm
+   ln -s /usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/npx /usr/bin/npx
+fi
 
 #
 [[ ! -d ${WORKING_DIRECTORY} ]] && (mkdir -p ${WORKING_DIRECTORY} ; chown ${USERNAME} ${WORKING_DIRECTORY})
@@ -83,7 +83,7 @@ fi
 #
 touch /var/log/k2s.log && chown ${USERNAME} /var/log/k2s.log && chmod 664 /var/log/k2s.log
 
-# handle via systemD
+# handled via systemD service
 #setcap CAP_NET_BIND_SERVICE=+ep $(which node)
 
 #
