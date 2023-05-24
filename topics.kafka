@@ -1,0 +1,24 @@
+#
+# Note: format is per line kafka-topic:parent-oid
+# Note: All kafka topic names are case sensitive
+# Note: SNMP OIDs are as
+#       Top-Level OID 1.3.6.1.4.1 is enterprise
+#       Next OID .4115 is enterprise arris (example)
+#       Next OID .1 is products
+#       Next OID .10 is FLX PON
+#       Next OID .1 is domain manager
+#       Next OID .x is the specific telemtry feed (based on kafka topic definition)
+#       Example: 1.3.6.1.4.1.4115.1.10.1.1
+#
+# Note: OIDs in this file are not seperately verified
+# Note: Kafka topics are not verified to exist in advance
+# Note: below is clarifications on this file format etc.
+# Note: blank lines are ignored
+# Note: lines starting with comment are ignored from list of topics
+# Note: lines containing comment are truncated to remove comment
+# Note: spaces not required between OID and comment
+#
+
+# XGS-PON
+xxxx-pon-gemport-metrics:1.3.6.1.4.1.4115.1.10.1.1
+xxxx-pon-interface-metrics:1.3.6.1.4.1.4115.1.10.1.2

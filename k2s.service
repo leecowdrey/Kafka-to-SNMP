@@ -1,0 +1,17 @@
+[Unit]
+Description=Kafka Bus SNMP Server
+After=multi-user.target
+
+[Service]
+Type=simple
+User=k2s
+Group=k2s
+Restart=always
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+WorkingDirectory=/usr/local/k2s
+StandardOutput=/var/log/k2s.log
+StandardError=/var/log/k2s.log
+ExecStart=/usr/bin/node k2s.js
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,406 @@
+COMMSCOPE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, enterprises FROM SNMPv2-SMI
+    MODULE-COMPLIANCE, OBJECT-GROUP FROM SNMPv2-CONF;
+
+commscope MODULE-IDENTITY
+        LAST-UPDATED "202304111530Z"    -- Apr 11, 2023, 3:30:00 PM
+        ORGANIZATION "CommScope, Inc."
+        CONTACT-INFO
+                "CommScope, Hickory, North Carolina, 28602, USA.
+                Phone:  +1 828 324 2200,
+                E-mail: lee.cowdrey@commscope.com"
+        DESCRIPTION
+                "This is a header for the CommScope (arris) enterprise MIB.  All objects appear elsewhere."
+        REVISION "202304111530Z"        -- Apr 11, 2023, 3:30:00 PM
+        DESCRIPTION
+                "Initial version."
+        -- 1.3.6.1.4.1.4115
+        ::= { enterprises 4115 }
+
+-- CommScope Product Lines
+commscopeProducts        OBJECT IDENTIFIER ::= { commscope 1 }
+-- commscopeProducts 1..9 covers packetport, cm110, arrisProdIdCM, arrisProdIdCMTS, arrisProdIdMRC, arrisProdIdGlobalAccess, arrisProdIdVideo, arrisProdIdCERc
+commscopeProdIdFlxPon    OBJECT IDENTIFIER ::= { commscopeProducts 10 }  -- FLX PON Products (OLT, ONU, Domain Manager et al)
+
+-- Product Identifiers for the PON product line
+commscopeFlxPonDM         OBJECT IDENTIFIER ::= { commscopeProdIdFlxPon 1 }    -- Domain Manager
+commscopeFlxPonOlt        OBJECT IDENTIFIER ::= { commscopeProdIdFlxPon 2 }    -- OLT (polt/volt etc.)
+commscopeFlxPonOnu        OBJECT IDENTIFIER ::= { commscopeProdIdFlxPon 3 }    -- ONU
+commscopeFlxPonOmci       OBJECT IDENTIFIER ::= { commscopeProdIdFlxPon 4 }   -- OMCI
+
+-- Conformance
+commscopeFlxPonMIBConformance OBJECT IDENTIFIER ::= { commscopeFlxPonDM 99 }
+commscopeFlxPonMIBCompliances OBJECT IDENTIFIER ::= { commscopeFlxPonMIBConformance 1 }
+commscopeFlxPonMIBGroups      OBJECT IDENTIFIER ::= { commscopeFlxPonMIBConformance 2 }
+
+compliance MODULE-COMPLIANCE
+    STATUS  current
+    DESCRIPTION "The compliance statement for SNMPv2 entities which implement the SNMPv2 MIB."
+    MODULE
+        MANDATORY-GROUPS { gemportMetricsGroup, ponInterfaceMetricsGroup }
+        GROUP   commscopeFlxPonMIBGroups
+        DESCRIPTION "This group is mandatory for SNMPv2 entities"
+    ::= { commscopeFlxPonMIBCompliances 2 }
+
+gemportMetricsGroup OBJECT-GROUP
+        OBJECTS { gpOltId,
+                  gpOnuId,
+                  gpActualGemportId,
+                  gpNameGemport,
+                  gpIfType,
+                  gpSubIfType,
+                  gpTimeStamp,
+                  gpVAniSideInFrames,
+                  gpVAniSideOutFrames }
+        STATUS current
+        DESCRIPTION "Collection of objects providing GEMPORT metrics"
+        ::= { commscopeFlxPonMIBGroups 1 }
+
+ponInterfaceMetricsGroup OBJECT-GROUP
+        OBJECTS { piOltId,
+                  piOnuId,
+                  piName,
+                  piIfType,
+                  piSubIfType,
+                  piType,
+                  piTimeStamp,
+                  piInDiscards,
+                  piInErrors,
+                  piInPkts,
+                  piInUnicastPkts,
+                  piOutDiscards,
+                  piOutPkts,
+                  piOutUnicastsPkts,
+                  piGemportHecErrors,
+                  piGemportInFrames,
+                  piGemportOutFrames,
+                  piGemportKeyErrors,
+                  piPhyInBipErrors,
+                  piPhyInBipProtWords,
+                  piPhyInFecCodeWords,
+                  piPhyUncorrFecCodeWords,
+                  piPhyPloamDownstreamMessages,
+                  piPhyPloamUpstreamMessages }
+        STATUS current
+        DESCRIPTION "Collection of objects providing PON Interface metrics"
+        ::= { commscopeFlxPonMIBGroups 2 }
+
+-- GEMPORT Metrics
+gemportMetricsTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF GemportMetricsTableEntry
+        MAX-ACCESS not-accessible
+        STATUS  current
+        DESCRIPTION "XGS-PON GEMPORT metrics table"
+        ::= { commscopeFlxPonDM 1 }
+
+gemportMetricsTableEntry OBJECT-TYPE
+        SYNTAX  GemportMetricsTableEntry
+        MAX-ACCESS not-accessible
+        STATUS  current
+        DESCRIPTION "XGS-PON GEMPORT metrics table entry"
+        INDEX { gpIdx }
+        ::= { gemportMetricsTable 1 }
+
+gpIdx OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS not-accessible
+        STATUS current
+        DESCRIPTION "Table index"
+        ::= { gemportMetricsTableEntry 1 }
+
+gpOltId OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(4..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "OLT name or identifier"
+        ::= { gemportMetricsTableEntry 2 }
+
+gpOnuId OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "ONU name or identifier"
+        ::= { gemportMetricsTableEntry 3 }
+
+gpActualGemportId OBJECT-TYPE
+        SYNTAX  Integer32 (0..4095)
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "GEMPORT identifier"
+        ::= { gemportMetricsTableEntry 4 }
+
+gpNameGemport OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "GEMPORT name"
+        ::= { gemportMetricsTableEntry 5 }
+
+gpIfType OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "Interface name"
+        ::= { gemportMetricsTableEntry 6 }
+
+gpSubIfType OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "Sub-interface name"
+        ::= { gemportMetricsTableEntry 7 }
+
+gpTimeStamp OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(20))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "Timestamp"
+        ::= { gemportMetricsTableEntry 8 }
+
+gpVAniSideInFrames OBJECT-TYPE
+        SYNTAX  Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "vANI side In-Frame"
+        ::= { gemportMetricsTableEntry 9 }
+
+gpVAniSideOutFrames OBJECT-TYPE
+        SYNTAX  Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "vANI side Out-Frame"
+        ::= { gemportMetricsTableEntry 10 }
+
+GemportMetricsTableEntry ::= SEQUENCE {
+        gpIdx               Integer32,
+        gpOltId             OCTET STRING,
+        gpOnuId             OCTET STRING,
+        gpActualGemportId   Integer32,
+        gpNameGemport       OCTET STRING,
+        gpIfType            OCTET STRING,
+        gpSubIfType         OCTET STRING,
+        gpTimeStamp         OCTET STRING,
+        gpVAniSideInFrames  Integer32,
+        gpVAniSideOutFrames Integer32 }
+
+-- PON Interface Metrics
+ponInterfaceMetricsTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF PonInterfaceMetricsTableEntry
+        MAX-ACCESS not-accessible
+        STATUS  current
+        DESCRIPTION "XGS-PON PON Interface metrics table"
+        ::= { commscopeFlxPonDM 2 }
+
+ponInterfaceMetricsTableEntry OBJECT-TYPE
+        SYNTAX  PonInterfaceMetricsTableEntry
+        MAX-ACCESS not-accessible
+        STATUS  current
+        DESCRIPTION "XGS-PON PON Interface metrics table entry"
+        INDEX { piIdx }
+        ::= { ponInterfaceMetricsTable 1 }
+
+piIdx OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS not-accessible
+        STATUS current
+        DESCRIPTION "Table index"
+        ::=  { ponInterfaceMetricsTableEntry 1 }
+
+piOltId OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(4..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "OLT name or identifier"
+        ::= { ponInterfaceMetricsTableEntry 2 }
+
+piOnuId OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "ONU name or identifier"
+        ::= { ponInterfaceMetricsTableEntry 3 }
+
+piName OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "name"
+        ::= { ponInterfaceMetricsTableEntry 6 }
+
+piIfType OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "Interface name"
+        ::= { ponInterfaceMetricsTableEntry 4 }
+
+piSubIfType OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "Sub-interface name"
+        ::= { ponInterfaceMetricsTableEntry 5 }
+
+piType OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(1..64))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "type"
+        ::= { ponInterfaceMetricsTableEntry 7 }
+
+piTimeStamp OBJECT-TYPE
+        SYNTAX  OCTET STRING (SIZE(20))
+        MAX-ACCESS read-only
+        STATUS    current
+        DESCRIPTION "Timestamp"
+        ::= { ponInterfaceMetricsTableEntry 8 }
+
+piInDiscards OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "In discarded"
+        ::= { ponInterfaceMetricsTableEntry 9 }
+
+piInErrors OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "In errors"
+        ::= { ponInterfaceMetricsTableEntry 10 }
+
+piInPkts OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "In packets"
+        ::= { ponInterfaceMetricsTableEntry 11 }
+
+piInUnicastPkts OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "In unicast packets"
+        ::= { ponInterfaceMetricsTableEntry 12 }
+
+piOutDiscards OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "Out discards"
+        ::= { ponInterfaceMetricsTableEntry 13 }
+
+piOutPkts OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "Out packets"
+        ::= { ponInterfaceMetricsTableEntry 14 }
+
+piOutUnicastsPkts OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "Out unicast ackets"
+        ::= { ponInterfaceMetricsTableEntry 15 }
+
+piGemportHecErrors OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "GEMPORT HEC Errors"
+        ::= { ponInterfaceMetricsTableEntry 16 }
+
+piGemportInFrames OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "GEMPORT In Frames"
+        ::= { ponInterfaceMetricsTableEntry 17 }
+
+piGemportOutFrames OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "GEMPORT Out Frames"
+        ::= { ponInterfaceMetricsTableEntry 18 }
+
+piGemportKeyErrors OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "GEMPORT Key Errors"
+        ::= { ponInterfaceMetricsTableEntry 19 }
+
+piPhyInBipErrors OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "xpon Phy In BIP Errors"
+        ::= { ponInterfaceMetricsTableEntry 20 }
+
+piPhyInBipProtWords OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "xpon Phy In BIP Protected Words"
+        ::= { ponInterfaceMetricsTableEntry 21 }
+
+piPhyInFecCodeWords OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "xpon Phy In FEC Codewords"
+        ::= { ponInterfaceMetricsTableEntry 22 }
+
+piPhyUncorrFecCodeWords OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "xpon Phy In Uncorreted FEC Codewords"
+        ::= { ponInterfaceMetricsTableEntry 23 }
+
+piPhyPloamDownstreamMessages OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "xpon Phy Ploam Downstream Messages"
+        ::= { ponInterfaceMetricsTableEntry 24 }
+
+piPhyPloamUpstreamMessages OBJECT-TYPE
+        SYNTAX Integer32 (0..2147483647)
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION "xpon Phy Ploam Upstream Messages"
+        ::= { ponInterfaceMetricsTableEntry 25 }
+
+PonInterfaceMetricsTableEntry ::= SEQUENCE {
+        piIdx                        Integer32,
+        piOltId                      OCTET STRING,
+        piOnuId                      OCTET STRING,
+        piName                       OCTET STRING,
+        piIfType                     OCTET STRING,
+        piSubIfType                  OCTET STRING,
+        piType                       OCTET STRING,
+        piTimeStamp                  OCTET STRING,
+        piInDiscards                 Integer32,
+        piInErrors                   Integer32,
+        piInPkts                     Integer32,
+        piInUnicastPkts              Integer32,
+        piOutDiscards                Integer32,
+        piOutPkts                    Integer32,
+        piOutUnicastsPkts            Integer32,
+        piGemportHecErrors           Integer32,
+        piGemportInFrames            Integer32,
+        piGemportOutFrames           Integer32,
+        piGemportKeyErrors           Integer32,
+        piPhyInBipErrors             Integer32,
+        piPhyInBipProtWords          Integer32,
+        piPhyInFecCodeWords          Integer32,
+        piPhyUncorrFecCodeWords      Integer32,
+        piPhyPloamDownstreamMessages Integer32,
+        piPhyPloamUpstreamMessages   Integer32 }
+
+END
