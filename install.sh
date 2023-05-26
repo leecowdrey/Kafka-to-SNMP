@@ -8,8 +8,10 @@ SNMP_PASSWORD=${5:-"czNjcjN0MDA="}
 SNMP_BIND_TARGET=${6:-0.0.0.0}
 SNMP_PORT=${7:-161}
 KAFKA_BROKER=${8:-127.0.0.1:9092}
-TIME_ZONE=${9:-Europe/London}
-SNMP_ENGINE_ID=$(tr -dc '0-9A-F' < /dev/urandom | head -c24)
+#TIME_ZONE=${9:-Europe/London}
+TIME_ZONE=$(cat /etc/timezone)
+#SNMP_ENGINE_ID=$(tr -dc '0-9A-F' < /dev/urandom | head -c24)
+SNMP_ENGINE_ID="2D6E01FD505B876DE51E72F8"
 OFFLINE_INSTALL=1
 
 # NodeJS versions
